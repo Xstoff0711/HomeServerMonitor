@@ -1,35 +1,43 @@
 package de.xstoff.homeserver;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 public class Main {
-
+    
     
     public static void main(String[] args) {
         System.out.println("HomeServer Monitor");
         System.out.println("==================");
         
-        Server jellyfin = new Server("Jellyfin", "192.168.188.72" ,8096);
+        List<Server> serverList;
         
-        Server nextCloud = new Server("NextCloud", "192.168.188.72", 8080);
-        Server pihole = new Server("PiHole", "192.168.188.64",8080);
+        ServerLoader serverLoader = new ServerLoader();
+        try {
+            Path path = Path.of("src/main/resources/servers.txt");
+            serverList = serverLoader.load(path);
+        } catch (IOException e) {
+            System.err.println("Serverliste konnte nicht geladen werden.");
+            e.printStackTrace();
+            return;
+        }
 
-        List<Server> serverList = new ArrayList<>();
-            
-        serverList.add(pihole);
-        serverList.add(nextCloud);
-        serverList.add(jellyfin);
-        
         ServerChecker serverChecker = new ServerChecker();
         for (Server server : serverList) {
-            boolean online = serverChecker.check(server);
-            System.out.println(
-                server.getName() + " | " + 
-                server.getIpAddress()+ ":" + 
-                server.getPort()+ " | " + 
-                (online ? "ONLINE" : "OFFLINE"));
+            printServerStatus(server, serverChecker);
         }
+
+    }
+
+    private static void printServerStatus(Server server, ServerChecker serverChecker) {
+        boolean online = serverChecker.check(server);
+
+        System.out.println(
+        server.name() + " | " + 
+        server.ipAddress()+ ":" + 
+        server.port()+ " | " + 
+        (online ? "ONLINE" : "OFFLINE"));
 
     }
 }
