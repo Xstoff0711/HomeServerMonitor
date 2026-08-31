@@ -15,8 +15,9 @@ class ServerCheckerTest {
         ServerChecker checker = new ServerChecker();
         Server server = new Server("TestServer", "127.0.0.1", 1);
         
-        boolean isOnline = checker.check(server);
-        assertFalse(isOnline);
+        ServerCheckResult result = checker.check(server);
+        assertTrue(result.responseTimeNanos().isEmpty());
+        assertFalse(result.online());
     }
 
     @Test
@@ -27,9 +28,10 @@ class ServerCheckerTest {
             ServerChecker checker = new ServerChecker();
             Server server = new Server("TestServer", "127.0.0.1", port);
 
-            boolean isOnline = checker.check(server);
+            ServerCheckResult result = checker.check(server);
 
-            assertTrue(isOnline);
+            assertTrue(result.online());
+            assertTrue(result.responseTimeNanos().isPresent());
         }
     }
 }

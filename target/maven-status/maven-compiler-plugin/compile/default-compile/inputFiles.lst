@@ -1,4 +1,5 @@
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/Main.java
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/Server.java
+/home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerCheckResult.java
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerChecker.java
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerLoader.java

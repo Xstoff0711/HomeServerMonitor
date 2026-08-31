@@ -1,22 +1,19 @@
 package de.xstoff.homeserver;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 public class Main {
-    
-    
+
     public static void main(String[] args) {
         System.out.println("HomeServer Monitor");
         System.out.println("==================");
-        
+
         List<Server> serverList;
-        
+
         ServerLoader serverLoader = new ServerLoader();
         try {
-            Path path = Path.of("src/main/resources/servers.txt");
-            serverList = serverLoader.load(path);
+            serverList = serverLoader.loadResource("servers.txt");
         } catch (IOException e) {
             System.err.println("Serverliste konnte nicht geladen werden.");
             e.printStackTrace();
@@ -31,13 +28,14 @@ public class Main {
     }
 
     private static void printServerStatus(Server server, ServerChecker serverChecker) {
-        boolean online = serverChecker.check(server);
-
+        ServerCheckResult result = serverChecker.check(server);
+        double responseTimeMillis = result.responseTimeNanos().getAsLong() / 1_000_000.0;
         System.out.println(
-        server.name() + " | " + 
-        server.ipAddress()+ ":" + 
-        server.port()+ " | " + 
-        (online ? "ONLINE" : "OFFLINE"));
+                server.name() + " | " +
+                        server.ipAddress() + ":" +
+                        server.port() + " | " +
+                        (result.online() ? "ONLINE" : "OFFLINE") + " | " +
+                        String.format("%.2f", responseTimeMillis) + " ms");
 
     }
 }
