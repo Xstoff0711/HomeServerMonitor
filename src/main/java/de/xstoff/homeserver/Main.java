@@ -3,6 +3,7 @@ package de.xstoff.homeserver;
 import java.io.IOException;
 import java.util.List;
 
+
 public class Main {
 
     public static void main(String[] args) {
@@ -21,21 +22,15 @@ public class Main {
         }
 
         ServerChecker serverChecker = new ServerChecker();
+        ServerStatusFormatter formatter = new ServerStatusFormatter();
         for (Server server : serverList) {
-            printServerStatus(server, serverChecker);
+            printServerStatus(server, serverChecker, formatter);
         }
-
+        
     }
-
-    private static void printServerStatus(Server server, ServerChecker serverChecker) {
+    
+    private static void printServerStatus(Server server, ServerChecker serverChecker, ServerStatusFormatter formatter) {
         ServerCheckResult result = serverChecker.check(server);
-        double responseTimeMillis = result.responseTimeNanos().getAsLong() / 1_000_000.0;
-        System.out.println(
-                server.name() + " | " +
-                        server.ipAddress() + ":" +
-                        server.port() + " | " +
-                        (result.online() ? "ONLINE" : "OFFLINE") + " | " +
-                        String.format("%.2f", responseTimeMillis) + " ms");
-
+        System.out.println(formatter.format(server, result));
     }
 }

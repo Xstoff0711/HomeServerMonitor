@@ -11,13 +11,19 @@ import java.net.ServerSocket;
 class ServerCheckerTest {
 
     @Test
-    void shouldReturnFalseWhenPortIsNotReachable() {
+    void shouldReturnFalseWhenPortIsNotReachable() throws IOException {
         ServerChecker checker = new ServerChecker();
-        Server server = new Server("TestServer", "127.0.0.1", 1);
         
+        int port;
+        try (ServerSocket portSocket = new ServerSocket(0)) {
+            port = portSocket.getLocalPort();
+        }// Close the socket to make the port unreachable
+        
+        Server server = new Server("TestServer", "127.0.0.1", port);
         ServerCheckResult result = checker.check(server);
-        assertTrue(result.responseTimeNanos().isEmpty());
+        
         assertFalse(result.online());
+        assertTrue(result.responseTimeNanos().isEmpty());
     }
 
     @Test
@@ -32,6 +38,7 @@ class ServerCheckerTest {
 
             assertTrue(result.online());
             assertTrue(result.responseTimeNanos().isPresent());
+            assertTrue(result.responseTimeNanos().getAsLong() >= 0);
         }
     }
 }

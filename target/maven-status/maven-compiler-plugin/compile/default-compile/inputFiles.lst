@@ -3,3 +3,4 @@
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerCheckResult.java
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerChecker.java
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerLoader.java
+/home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerStatusFormatter.java
