@@ -24,9 +24,9 @@ public class HttpServerCheckerTest {
             exchange.close();
         });
         server.start();
-        HttpServerChecker checker = new HttpServerChecker();
-        Server testServer = new Server("TestServer", "localhost", server.getAddress().getPort());
-        ServerCheckResult result = checker.check(testServer, Duration.ofMillis(100));
+        HttpServerChecker checker = new HttpServerChecker(Duration.ofMillis(100));
+        Server testServer = new Server("TestServer", "localhost", server.getAddress().getPort(), CheckType.HTTP);
+        ServerCheckResult result = checker.check(testServer);
         assertTrue(result.online());
         assertTrue(result.responseTimeNanos().isPresent());
         assertTrue(result.responseTimeNanos().getAsLong() >= 0);
@@ -49,9 +49,9 @@ public class HttpServerCheckerTest {
             exchange.close();
         });
         server.start();
-        HttpServerChecker checker = new HttpServerChecker();
-        Server testServer = new Server("TestServer", "localhost", server.getAddress().getPort());
-        ServerCheckResult result = checker.check(testServer, Duration.ofMillis(100));
+        HttpServerChecker checker = new HttpServerChecker(Duration.ofMillis(100));
+        Server testServer = new Server("TestServer", "localhost", server.getAddress().getPort(), CheckType.HTTP);
+        ServerCheckResult result = checker.check(testServer);
         assertFalse(result.online());
         assertTrue(result.responseTimeNanos().isEmpty());
         }
@@ -78,8 +78,8 @@ public class HttpServerCheckerTest {
             });
             server.start();
 
-            HttpServerChecker checker = new HttpServerChecker(); // 100ms Timeout
-            ServerCheckResult result = checker.check(new Server("TestServer", "localhost", server.getAddress().getPort()), Duration.ofMillis(100));
+            HttpServerChecker checker = new HttpServerChecker(Duration.ofMillis(100)); // 100ms Timeout
+            ServerCheckResult result = checker.check(new Server("TestServer", "localhost", server.getAddress().getPort(), CheckType.HTTP));
 
             assertFalse(result.online());
             assertTrue(result.responseTimeNanos().isEmpty());

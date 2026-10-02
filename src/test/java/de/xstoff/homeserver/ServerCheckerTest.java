@@ -19,7 +19,7 @@ class ServerCheckerTest {
             port = portSocket.getLocalPort();
         }// Close the socket to make the port unreachable
         
-        Server server = new Server("TestServer", "127.0.0.1", port);
+        Server server = new Server("TestServer", "127.0.0.1", port, CheckType.TCP);
         ServerCheckResult result = checker.check(server);
         
         assertFalse(result.online());
@@ -32,7 +32,7 @@ class ServerCheckerTest {
             int port = serverSocket.getLocalPort();
 
             ServerChecker checker = new ServerChecker();
-            Server server = new Server("TestServer", "127.0.0.1", port);
+            Server server = new Server("TestServer", "127.0.0.1", port, CheckType.TCP);
 
             ServerCheckResult result = checker.check(server);
 

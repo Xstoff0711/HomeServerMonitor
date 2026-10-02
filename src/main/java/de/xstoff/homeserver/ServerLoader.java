@@ -60,7 +60,7 @@ public class ServerLoader {
 
     private Server parseServer(String line) {
         String[] parts = line.split(";");
-        if (parts.length != 3) {
+        if (parts.length != 4) {
             throw new IllegalArgumentException(
                     "Invalid server configuration: " + line);
         }
@@ -73,6 +73,19 @@ public class ServerLoader {
                     e);
         }
 
-        return new Server(parts[0], parts[1], port);
+        CheckType checkType;
+        switch (parts[3].strip().toLowerCase()) {
+            case "tcp":
+                checkType = CheckType.TCP;
+                break;
+            case "http":
+                checkType = CheckType.HTTP;
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "Invalid check type: " + parts[3]);
+        }
+
+        return new Server(parts[0], parts[1], port, checkType);
     }
 }

@@ -1,7 +1,7 @@
 # HomeServer Monitor
 
-Jellyfin;192.168.188.72;8096
-NextCloud;192.168.188.72;8080
+Jellyfin;192.168.188.72;8096;HTTP
+NextCloud;192.168.188.72;8080;HTTP
 
 # Raspberry Pi
-PiHole;192.168.188.64;8080
+PiHole;192.168.188.64;8080;HTTP

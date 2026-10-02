@@ -5,7 +5,7 @@ import java.util.OptionalLong;
 import java.net.InetSocketAddress;
 import java.io.IOException;
 
-public class ServerChecker {
+public class ServerChecker implements ServerHealthChecker {
     
     public ServerCheckResult check(Server server) {
         try (Socket socket = new Socket()){

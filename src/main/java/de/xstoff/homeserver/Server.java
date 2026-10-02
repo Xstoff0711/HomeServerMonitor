@@ -1,6 +1,6 @@
 package de.xstoff.homeserver;
 
-public record Server(String name, String ipAddress, int port){
+public record Server(String name, String ipAddress, int port, CheckType checkType) {
     
 }
     

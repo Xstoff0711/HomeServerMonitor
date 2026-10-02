@@ -10,7 +10,7 @@ public class ServerStatusFormatterTest {
     
     @Test
     void shouldFormatOnlineServer(){
-        Server server = new Server("Jellyfin", "192.168.188.72", 8096);
+        Server server = new Server("Jellyfin", "192.168.188.72", 8096, CheckType.HTTP);
         ServerCheckResult result = new ServerCheckResult(true, OptionalLong.of(1500000 )); // 1.5 ms in nanoseconds
         ServerStatusFormatter formatter = new ServerStatusFormatter();
         String formattedStatus = formatter.format(server, result);
@@ -21,7 +21,7 @@ public class ServerStatusFormatterTest {
 
     @Test
     void shouldFormatOfflineServer() {
-        Server server = new Server("Jellyfin", "192.168.188.72", 8096);
+        Server server = new Server("Jellyfin", "192.168.188.72", 8096, CheckType.HTTP);
         ServerCheckResult result = new ServerCheckResult(false,OptionalLong.empty()); // 5 ms in nanoseconds
         ServerStatusFormatter formatter = new ServerStatusFormatter();
         String formattedStatus = formatter.format(server, result);

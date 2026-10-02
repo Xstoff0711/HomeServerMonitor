@@ -18,7 +18,7 @@ class ServerLoaderTest {
     @Test
     void shouldLoadServerFromFile() throws Exception {
         Path filePath = tempDir.resolve("servers.txt");
-        String content = "Jellyfin;192.168.1.100;8096";
+        String content = "Jellyfin;192.168.1.100;8096;HTTP";
         Files.writeString(filePath, content, StandardCharsets.UTF_8);
 
         ServerLoader serverLoader = new ServerLoader();
@@ -35,7 +35,7 @@ class ServerLoaderTest {
     @Test
     void shouldRejectLineWithoutPort() throws Exception {
         Path filePath = tempDir.resolve("servers.txt");
-        String content = "Jellyfin;192.168.1.100";
+        String content = "Jellyfin;192.168.1.100;HTTP";
         Files.writeString(filePath, content, StandardCharsets.UTF_8);
 
         ServerLoader serverLoader = new ServerLoader();
@@ -43,14 +43,14 @@ class ServerLoaderTest {
                 IllegalArgumentException.class,
                 () -> serverLoader.load(filePath));
         assertEquals(
-                "Invalid server configuration: Jellyfin;192.168.1.100",
+                "Invalid server configuration: Jellyfin;192.168.1.100;HTTP",
                 exception.getMessage());
     }
 
     @Test
     void shouldRejectNonNumericPort() throws Exception {
         Path filePath = tempDir.resolve("servers.txt");
-        String content = "Jellyfin;192.168.1.100;abc";
+        String content = "Jellyfin;192.168.1.100;abc;TCP";
         Files.writeString(filePath, content, StandardCharsets.UTF_8);
 
         ServerLoader serverLoader = new ServerLoader();
@@ -67,7 +67,7 @@ class ServerLoaderTest {
         Path filePath = tempDir.resolve("servers.txt");
         String content = """
 
-                Jellyfin;192.168.1.100;8096
+                Jellyfin;192.168.1.100;8096;HTTP
                 """;
         ;
         Files.writeString(filePath, content, StandardCharsets.UTF_8);
@@ -84,7 +84,7 @@ class ServerLoaderTest {
 
         String content = """
                 # Meine Server
-                Jellyfin;192.168.1.100;8096
+                Jellyfin;192.168.1.100;8096;HTTP
                 """;
 
         Files.writeString(filePath, content, StandardCharsets.UTF_8);
@@ -115,6 +115,19 @@ class ServerLoaderTest {
 
         assertEquals(
                 "Resource not found: does-not-exist.txt",
+                exception.getMessage());
+    }
+    @Test 
+    void shouldRejectLineWithInvalidCheckType() throws Exception {
+        Path filePath = tempDir.resolve("servers.txt");
+        String content = "Jellyfin;192.168.1.100;8096;FTP";
+        Files.writeString(filePath, content, StandardCharsets.UTF_8);
+        ServerLoader serverLoader = new ServerLoader();
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> serverLoader.load(filePath));
+        assertEquals(
+                "Invalid check type: FTP",
                 exception.getMessage());
     }
 }
