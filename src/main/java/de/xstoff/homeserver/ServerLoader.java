@@ -60,10 +60,13 @@ public class ServerLoader {
 
     private Server parseServer(String line) {
         String[] parts = line.split(";");
-        if (parts.length != 4) {
+        if (parts.length != 4 && parts.length != 5) {
             throw new IllegalArgumentException(
                     "Invalid server configuration: " + line);
         }
+
+        String path = parts.length == 5 ? parts[4].strip() : "/";
+
         int port;
         try {
             port = Integer.parseInt(parts[2]);
@@ -85,7 +88,12 @@ public class ServerLoader {
                 throw new IllegalArgumentException(
                         "Invalid check type: " + parts[3]);
         }
+        String[] pathList = line.split(";");
+        if (pathList.length != 4 && pathList.length != 5) {
+            throw new IllegalArgumentException(
+                    "Invalid server configuration: " + line);
+        }
 
-        return new Server(parts[0], parts[1], port, checkType);
+        return new Server(parts[0], parts[1], port, checkType , path);
     }
 }

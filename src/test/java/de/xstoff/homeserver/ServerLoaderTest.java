@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -129,5 +130,26 @@ class ServerLoaderTest {
         assertEquals(
                 "Invalid check type: FTP",
                 exception.getMessage());
+    }
+
+    @Test
+    void shouldLoadHttpServerWithCustomPath() throws Exception {
+        Path filePath = tempDir.resolve("servers.txt");
+
+        String content =
+                "PiHole;192.168.188.64;8080;HTTP;/admin/";
+
+        Files.writeString(
+                filePath,
+                content,
+                StandardCharsets.UTF_8
+        );
+
+        ServerLoader serverLoader = new ServerLoader();
+
+        List<Server> servers = serverLoader.load(filePath);
+
+        assertEquals(1, servers.size());
+        assertEquals("/admin/", servers.get(0).path());
     }
 }

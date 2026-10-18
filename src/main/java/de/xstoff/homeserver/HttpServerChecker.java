@@ -18,7 +18,7 @@ public class HttpServerChecker implements ServerHealthChecker {
         try{
             HttpClient http = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(java.net.URI.create("http://" + server.ipAddress() + ":" + server.port() + "/"))
+                    .uri(java.net.URI.create("http://" + server.ipAddress() + ":" + server.port() + server.path()))
                     .timeout(timeout)
                     .build();
 
