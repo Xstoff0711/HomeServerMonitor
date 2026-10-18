@@ -88,4 +88,27 @@ public class HttpServerCheckerTest {
             server.stop(0);
         }
     }
+
+    @Test 
+    void shouldConsiderRedirectAsOnline() throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+        
+        try {
+            server.createContext("/", exchange -> {
+                exchange.getResponseHeaders().add("Location", "/new-location");
+                exchange.sendResponseHeaders(302, -1);
+                exchange.close();
+            });
+            server.start();
+
+            HttpServerChecker checker = new HttpServerChecker(Duration.ofMillis(500));
+            ServerCheckResult result = checker.check(new Server("TestServer", "localhost", server.getAddress().getPort(), CheckType.HTTP));
+
+            assertTrue(result.online());
+            assertTrue(result.responseTimeNanos().isPresent());
+            assertTrue(result.responseTimeNanos().getAsLong() >= 0);
+        } finally {
+            server.stop(0);
+        }
+    }
 }

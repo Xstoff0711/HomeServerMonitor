@@ -3,6 +3,8 @@ package de.xstoff.homeserver;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 
 public class Main {
@@ -27,15 +29,11 @@ public class Main {
         
         ServerHealthCheckerFactory factory = new ServerHealthCheckerFactory(tcpChecker, httpChecker);
         ServerStatusFormatter formatter = new ServerStatusFormatter();
-        for (Server server : serverList) {
-            ServerHealthChecker checker = factory.getChecker(server);
-            printServerStatus(server, checker, formatter);
-        }
         
-    }
-    
-    private static void printServerStatus(Server server, ServerHealthChecker serverChecker, ServerStatusFormatter formatter) {
-        ServerCheckResult result = serverChecker.check(server);
-        System.out.println(formatter.format(server, result));
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        MonitoringService monitoringService = new MonitoringService(serverList, factory, formatter, scheduler);
+
+        monitoringService.startMonitoring(Duration.ofSeconds(30));
+        
     }
 }

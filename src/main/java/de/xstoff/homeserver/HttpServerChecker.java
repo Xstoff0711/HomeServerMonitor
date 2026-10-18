@@ -27,7 +27,7 @@ public class HttpServerChecker implements ServerHealthChecker {
             HttpResponse<Void> response = http.send(request, HttpResponse.BodyHandlers.discarding());
             long endTime = System.nanoTime();
 
-            if(response.statusCode() == 200){
+            if(response.statusCode() >= 200 && response.statusCode() < 400) {
                 return new ServerCheckResult(true, OptionalLong.of(endTime - startTime));
             }
             else {
