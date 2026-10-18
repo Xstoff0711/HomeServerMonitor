@@ -33,4 +33,8 @@ public class MonitoringService {
             interval.toMillis(),
             TimeUnit.MILLISECONDS);
     }
+
+    public void stopMonitoring() {
+        scheduler.shutdown();
+    }
 }

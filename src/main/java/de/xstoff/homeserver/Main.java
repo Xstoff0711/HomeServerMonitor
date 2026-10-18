@@ -33,7 +33,9 @@ public class Main {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         MonitoringService monitoringService = new MonitoringService(serverList, factory, formatter, scheduler);
 
+        Runtime.getRuntime().addShutdownHook(
+            new Thread(monitoringService::stopMonitoring)
+        );
         monitoringService.startMonitoring(Duration.ofSeconds(30));
-        
     }
 }
