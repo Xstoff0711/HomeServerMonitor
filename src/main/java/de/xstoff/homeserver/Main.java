@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("HomeServer Monitor");
         System.out.println("==================");
 
@@ -39,7 +39,8 @@ public class Main {
                                                     scheduler,
                                                     checkExecutor
                                                 );
-
+        StatusApiServer apiServer = new StatusApiServer(8085, monitoringService);
+        apiServer.start();                                                        
         Runtime.getRuntime().addShutdownHook(
             new Thread(monitoringService::stopMonitoring)            
         );

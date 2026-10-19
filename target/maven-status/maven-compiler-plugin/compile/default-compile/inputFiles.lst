@@ -8,4 +8,6 @@
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerHealthChecker.java
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerHealthCheckerFactory.java
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerLoader.java
+/home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerStatus.java
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ServerStatusFormatter.java
+/home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/StatusApiServer.java
