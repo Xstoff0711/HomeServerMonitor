@@ -3,9 +3,9 @@ package de.xstoff.homeserver;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-
 
 public class Main {
 
@@ -31,10 +31,17 @@ public class Main {
         ServerStatusFormatter formatter = new ServerStatusFormatter();
         
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        MonitoringService monitoringService = new MonitoringService(serverList, factory, formatter, scheduler);
+        ExecutorService checkExecutor = Executors.newFixedThreadPool(4);
+        MonitoringService monitoringService = new MonitoringService(
+                                                    serverList,
+                                                    factory,
+                                                    formatter,
+                                                    scheduler,
+                                                    checkExecutor
+                                                );
 
         Runtime.getRuntime().addShutdownHook(
-            new Thread(monitoringService::stopMonitoring)
+            new Thread(monitoringService::stopMonitoring)            
         );
         monitoringService.startMonitoring(Duration.ofSeconds(30));
     }
