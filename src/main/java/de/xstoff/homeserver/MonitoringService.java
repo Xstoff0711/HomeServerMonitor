@@ -28,29 +28,33 @@ public class MonitoringService {
         DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
     private void checkAllServers() {
-        List<Future<?>> futures = new ArrayList<>();
+        List<Future<String>> futures = new ArrayList<>();
         String timestamp = LocalDateTime.now().format(DATE_TIME_FORMATTER);
 
         System.out.println();
         System.out.println("--- Check " + timestamp + " ---");
         for (Server server : servers) {
-            Future<?> future = checkExecutor.submit(() -> {
+           Future<String> future = checkExecutor.submit(() -> {
                 ServerHealthChecker checker = checkerFactory.getChecker(server);
                 ServerCheckResult result = checker.check(server);
-                System.out.println(formatter.format(server, result));
+
+                return formatter.format(server, result);
             });
 
             futures.add(future);
         }
 
-        for (Future<?> future : futures) {
+        for (Future<String> future : futures) {
             try {
-                future.get();
+                String output = future.get();
+                System.out.println(output);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;
             } catch (ExecutionException e) {
-                System.err.println("Fehler beim Servercheck: " + e.getCause());
+                System.err.println(
+                        "Fehler beim Servercheck: " + e.getCause()
+                );
             }
         }
     }
