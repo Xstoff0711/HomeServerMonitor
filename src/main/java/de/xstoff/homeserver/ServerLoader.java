@@ -1,10 +1,6 @@
 package de.xstoff.homeserver;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -35,29 +31,7 @@ public class ServerLoader {
 
         return serverList;
     }
-
-    public List<Server> loadResource(String resourceName) throws IOException {
-
-        try (InputStream inputStream = ServerLoader.class.getClassLoader().getResourceAsStream(resourceName)) {
-
-            if (inputStream == null) {
-                throw new IllegalArgumentException(
-                        "Resource not found: " + resourceName);
-            }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-
-                List<Server> serverList = new ArrayList<>();
-                String line;
-
-                while ((line = reader.readLine()) != null) {
-                    Optional<Server> server = parseLine(line);
-                    server.ifPresent(serverList::add);
-                }
-                return serverList;
-            }
-        }
-    }
-
+    
     private Server parseServer(String line) {
         String[] parts = line.split(";");
         if (parts.length != 4 && parts.length != 5) {

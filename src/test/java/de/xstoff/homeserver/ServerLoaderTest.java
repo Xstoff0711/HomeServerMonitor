@@ -97,27 +97,6 @@ class ServerLoaderTest {
         assertEquals("Jellyfin", servers.get(0).name());
     }
 
-    @Test
-    void shouldLoadServersFromClasspathResource() throws Exception {
-        ServerLoader serverLoader = new ServerLoader();
-
-        var servers = serverLoader.loadResource("servers.txt");
-
-        assertEquals(3, servers.size());
-    }
-
-    @Test
-    void shouldRejectMissingResource() {
-        ServerLoader serverLoader = new ServerLoader();
-
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> serverLoader.loadResource("does-not-exist.txt"));
-
-        assertEquals(
-                "Resource not found: does-not-exist.txt",
-                exception.getMessage());
-    }
     @Test 
     void shouldRejectLineWithInvalidCheckType() throws Exception {
         Path filePath = tempDir.resolve("servers.txt");

@@ -17,7 +17,7 @@ public class Main {
 
         ServerLoader serverLoader = new ServerLoader();
         try {
-            serverList = serverLoader.loadResource("servers.txt");
+            serverList = serverLoader.load(ConfigPaths.getServersConfigPath());
         } catch (IOException e) {
             System.err.println("Serverliste konnte nicht geladen werden.");
             e.printStackTrace();

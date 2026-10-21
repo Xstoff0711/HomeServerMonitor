@@ -1,4 +1,5 @@
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/CheckType.java
+/home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/ConfigPaths.java
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/HttpServerChecker.java
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/Main.java
 /home/xstoff/Projects/HomeServerMonitor/src/main/java/de/xstoff/homeserver/MonitoringService.java

@@ -1,0 +1,15 @@
+de/xstoff/homeserver/ServerHealthChecker.class
+de/xstoff/homeserver/Server.class
+de/xstoff/homeserver/ServerStatus.class
+de/xstoff/homeserver/MonitoringService.class
+de/xstoff/homeserver/ServerHealthCheckerFactory$1.class
+de/xstoff/homeserver/Main.class
+de/xstoff/homeserver/ServerLoader.class
+de/xstoff/homeserver/CheckType.class
+de/xstoff/homeserver/HttpServerChecker.class
+de/xstoff/homeserver/ConfigPaths.class
+de/xstoff/homeserver/ServerCheckResult.class
+de/xstoff/homeserver/ServerStatusFormatter.class
+de/xstoff/homeserver/ServerHealthCheckerFactory.class
+de/xstoff/homeserver/StatusApiServer.class
+de/xstoff/homeserver/ServerChecker.class
