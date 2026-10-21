@@ -1,0 +1,12 @@
+{
+  "KPlugin": {
+    "Id": "de.xstoff.homeservermonitor",
+    "Name": "HomeServer Monitor",
+    "Description": "Shows the status of home server services",
+    "Icon": "network-server",
+    "Category": "System Information",
+    "Version": "0.1"
+  },
+  "X-Plasma-API-Minimum-Version": "6.0",
+  "KPackageStructure": "Plasma/Applet"
+}
