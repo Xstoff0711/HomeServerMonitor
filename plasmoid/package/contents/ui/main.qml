@@ -89,20 +89,25 @@ PlasmoidItem {
 
                 Repeater {
                     model: root.serverStatuses
+
                     Row {
                         required property var modelData
+
                         width: contentColumn.usableWidth
+                        height: deleteButton.implicitHeight
                         spacing: 8
+
                         Rectangle {
                             width: 10
                             height: 10
                             radius: 5
-                            anchors.verticalCenter: serverNameLabel.verticalCenter
+                            anchors.verticalCenter: parent.verticalCenter
                             color: modelData.online ? Kirigami.Theme.positiveTextColor : Kirigami.Theme.negativeTextColor
                         }
 
                         PlasmaComponents.Label {
                             id: serverNameLabel
+                            anchors.verticalCenter: parent.verticalCenter
 
                             width: 170
                             text: modelData.name
@@ -110,6 +115,7 @@ PlasmoidItem {
 
                         PlasmaComponents.Label {
                             id: serverStatusLabel
+                            anchors.verticalCenter: parent.verticalCenter
 
                             width: 70
                             text: modelData.online ? "ONLINE" : "OFFLINE"
@@ -117,6 +123,7 @@ PlasmoidItem {
 
                         PlasmaComponents.Label {
                             id: serverResponseTimeLabel
+                            anchors.verticalCenter: parent.verticalCenter
 
                             width: 65
                             horizontalAlignment: Text.AlignRight
