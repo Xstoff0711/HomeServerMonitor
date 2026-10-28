@@ -17,7 +17,28 @@ PlasmoidItem {
                 root.serverStatuses = JSON.parse(request.responseText);
 
         };
-        request.open("GET", "http://localhost:8085/status");
+        request.open("GET", "http://localhost:8085/status?t=" + Date.now());
+        request.send();
+    }
+
+    function deleteServer(server) {
+        let request = new XMLHttpRequest();
+        let params = "name=" + encodeURIComponent(server.name) + "&host=" + encodeURIComponent(server.host) + "&port=" + encodeURIComponent(server.port) + "&checkType=" + encodeURIComponent(server.checkType) + "&path=" + encodeURIComponent(server.path);
+        let url = "http://localhost:8085/servers?" + params;
+        console.log("Lösche Server:", server.name);
+        request.onreadystatechange = function() {
+            if (request.readyState !== XMLHttpRequest.DONE)
+                return ;
+
+            console.log("DELETE Antwort:", request.status, request.responseText);
+            if (request.status === 200) {
+                console.log("Server erfolgreich gelöscht");
+                root.loadStatuses();
+            } else {
+                console.log("Server konnte nicht gelöscht werden:", request.status, request.responseText);
+            }
+        };
+        request.open("DELETE", url);
         request.send();
     }
 
@@ -86,7 +107,7 @@ PlasmoidItem {
                         }
 
                         PlasmaComponents.Label {
-                            width: 210
+                            width: 170
                             text: modelData.name
                         }
 
@@ -99,6 +120,13 @@ PlasmoidItem {
                             width: 65
                             horizontalAlignment: Text.AlignRight
                             text: modelData.responseTimeMs !== null ? modelData.responseTimeMs + " ms" : "-"
+                        }
+
+                        PlasmaComponents.Button {
+                            text: "🗑"
+                            onClicked: {
+                                root.deleteServer(modelData);
+                            }
                         }
 
                     }

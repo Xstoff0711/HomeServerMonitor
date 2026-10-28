@@ -71,6 +71,10 @@ public class StatusApiServer {
 
             json.append("{");
             json.append("\"name\":\"").append(server.name()).append("\",");
+            json.append("\"host\":\"").append(server.ipAddress()).append("\",");
+            json.append("\"port\":").append(server.port()).append(",");
+            json.append("\"checkType\":\"").append(server.checkType()).append("\",");
+            json.append("\"path\":\"").append(server.path()).append("\",");
             json.append("\"online\":").append(result.online()).append(",");
             json.append("\"responseTimeMs\":");
 
@@ -100,7 +104,14 @@ public class StatusApiServer {
     }
 
     private void handleServers(HttpExchange exchange) throws IOException {
-        if (!exchange.getRequestMethod().equalsIgnoreCase("POST")) {
+        String method = exchange.getRequestMethod();
+
+        if (method.equalsIgnoreCase("DELETE")) {
+            handleDeleteServer(exchange);
+            return;
+        }
+
+        if (!method.equalsIgnoreCase("POST")) {
             sendResponse(exchange, 405, "Method Not Allowed");
             return;
         }
@@ -243,5 +254,89 @@ public class StatusApiServer {
 
             output.write(response);
         }
+    }
+
+    private void handleDeleteServer(HttpExchange exchange) throws IOException {
+        String query = exchange
+                .getRequestURI()
+                .getRawQuery();
+
+        if (query == null || query.isBlank()) {
+            sendResponse(exchange, 400, "Missing server parameters");
+            return;
+        }
+
+        Map<String, String> values = parseForm(query);
+
+        String name = values.getOrDefault("name", "").trim();
+        String host = values.getOrDefault("host", "").trim();
+        String portValue = values.getOrDefault("port", "").trim();
+        String checkTypeValue = values
+                .getOrDefault("checkType", "")
+                .trim()
+                .toUpperCase();
+
+        String path = values
+                .getOrDefault("path", "/")
+                .trim();
+
+        if (name.isBlank() || host.isBlank()) {
+            sendResponse(exchange, 400, "Name and host are required");
+            return;
+        }
+
+        int port;
+
+        try {
+            port = Integer.parseInt(portValue);
+        } catch (NumberFormatException e) {
+            sendResponse(exchange, 400, "Invalid port");
+            return;
+        }
+
+        CheckType checkType;
+
+        try {
+            checkType = CheckType.valueOf(checkTypeValue);
+        } catch (IllegalArgumentException e) {
+            sendResponse(exchange, 400, "Invalid check type");
+            return;
+        }
+
+        Server serverToRemove;
+
+        if (checkType == CheckType.HTTP) {
+            serverToRemove = new Server(
+                    name,
+                    host,
+                    port,
+                    checkType,
+                    path);
+        } else {
+            serverToRemove = new Server(
+                    name,
+                    host,
+                    port,
+                    checkType);
+        }
+
+        if (!monitoringService.containsServer(serverToRemove)) {
+            sendResponse(exchange, 404, "Server not found");
+            return;
+        }
+
+        boolean removedFromFile = serverLoader.remove(configPath, serverToRemove);
+
+        if (!removedFromFile) {
+            sendResponse(
+                    exchange,
+                    500,
+                    "Could not remove server from configuration");
+            return;
+        }
+
+        monitoringService.removeServer(serverToRemove);
+
+        sendResponse(exchange, 200, "Server removed");
     }
 }

@@ -100,4 +100,40 @@ public class ServerLoader {
                 StandardOpenOption.CREATE,
                 StandardOpenOption.APPEND);
     }
+
+    public boolean remove(Path path, Server server) throws IOException {
+        if (!Files.exists(path)) {
+            return false;
+        }
+
+        List<String> lines = Files.readAllLines(path);
+        List<String> remainingLines = new ArrayList<>();
+
+        boolean removed = false;
+
+        for (String line : lines) {
+            String trimmed = line.trim();
+
+            if (!trimmed.isEmpty() && !trimmed.startsWith("#")) {
+                Server parsedServer = parseServer(trimmed);
+
+                if (!removed && parsedServer.equals(server)) {
+                    removed = true;
+                    continue;
+                }
+            }
+
+            remainingLines.add(line);
+        }
+
+        if (removed) {
+            Files.write(
+                    path,
+                    remainingLines,
+                    StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.WRITE);
+        }
+
+        return removed;
+    }
 }

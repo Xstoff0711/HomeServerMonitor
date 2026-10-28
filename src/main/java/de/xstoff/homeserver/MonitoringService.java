@@ -93,7 +93,9 @@ public class MonitoringService {
 
         ServerCheckResult result = checker.check(server);
 
-        currentStatuses.put(server, result);
+        if (servers.contains(server)) {
+            currentStatuses.put(server, result);
+        }
 
         return new ServerStatus(server, result);
     }
@@ -110,5 +112,15 @@ public class MonitoringService {
 
     public boolean containsServer(Server server) {
         return servers.contains(server);
+    }
+
+    public boolean removeServer(Server server) {
+        boolean removed = servers.remove(server);
+
+        if (removed) {
+            currentStatuses.remove(server);
+        }
+
+        return removed;
     }
 }
