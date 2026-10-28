@@ -1,8 +1,8 @@
 import QtQuick
-import org.kde.plasma.plasmoid
+import org.kde.kirigami as Kirigami
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.core as PlasmaCore
-import org.kde.kirigami as Kirigami
+import org.kde.plasma.plasmoid
 
 PlasmoidItem {
     id: root
@@ -10,31 +10,26 @@ PlasmoidItem {
     property var serverStatuses: []
     property bool addFormVisible: false
 
-    preferredRepresentation: fullRepresentation
+    function loadStatuses() {
+        let request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (request.readyState === XMLHttpRequest.DONE && request.status === 200)
+                root.serverStatuses = JSON.parse(request.responseText);
 
+        };
+        request.open("GET", "http://localhost:8085/status");
+        request.send();
+    }
+
+    preferredRepresentation: fullRepresentation
     // Plasma soll KEINEN eigenen großen Hintergrund zeichnen.
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
-
-    function loadStatuses() {
-        let request = new XMLHttpRequest()
-
-        request.onreadystatechange = function() {
-            if (request.readyState === XMLHttpRequest.DONE
-                    && request.status === 200) {
-                root.serverStatuses = JSON.parse(request.responseText)
-            }
-        }
-
-        request.open("GET", "http://localhost:8085/status")
-        request.send()
-    }
 
     Timer {
         interval: 5000
         repeat: true
         running: true
         triggeredOnStart: true
-
         onTriggered: root.loadStatuses()
     }
 
@@ -53,9 +48,7 @@ PlasmoidItem {
 
             width: 420
             height: contentColumn.implicitHeight
-
             radius: 6
-
             color: Kirigami.Theme.backgroundColor
             border.color: Kirigami.Theme.separatorColor
             border.width: 1
@@ -63,17 +56,14 @@ PlasmoidItem {
             Column {
                 id: contentColumn
 
-                width: parent.width
+                readonly property real usableWidth: width - leftPadding - rightPadding
 
+                width: parent.width
                 padding: 16
                 spacing: 8
 
-                readonly property real usableWidth:
-                    width - leftPadding - rightPadding
-
                 PlasmaComponents.Label {
                     width: contentColumn.usableWidth
-
                     text: "HomeServer Monitor"
                     font.bold: true
                 }
@@ -91,58 +81,70 @@ PlasmoidItem {
                             width: 10
                             height: 10
                             radius: 5
-
                             anchors.verticalCenter: parent.verticalCenter
-
-                            color: modelData.online
-                                ? Kirigami.Theme.positiveTextColor
-                                : Kirigami.Theme.negativeTextColor
+                            color: modelData.online ? Kirigami.Theme.positiveTextColor : Kirigami.Theme.negativeTextColor
                         }
 
                         PlasmaComponents.Label {
                             width: 210
-
                             text: modelData.name
                         }
 
                         PlasmaComponents.Label {
                             width: 70
-
-                            text: modelData.online
-                                ? "ONLINE"
-                                : "OFFLINE"
+                            text: modelData.online ? "ONLINE" : "OFFLINE"
                         }
 
                         PlasmaComponents.Label {
                             width: 65
-
                             horizontalAlignment: Text.AlignRight
-
-                            text: modelData.responseTimeMs !== null
-                                ? modelData.responseTimeMs + " ms"
-                                : "-"
+                            text: modelData.responseTimeMs !== null ? modelData.responseTimeMs + " ms" : "-"
                         }
+
                     }
+
                 }
 
                 PlasmaComponents.Button {
                     width: contentColumn.usableWidth
-
-                    text: root.addFormVisible
-                        ? "Abbrechen"
-                        : "+ Server hinzufügen"
-
+                    text: root.addFormVisible ? "Abbrechen" : "+ Server hinzufügen"
                     onClicked: {
-                        root.addFormVisible =
-                            !root.addFormVisible
+                        root.addFormVisible = !root.addFormVisible;
                     }
                 }
 
                 Column {
                     id: addServerForm
 
-                    visible: root.addFormVisible
+                    function submitServer() {
+                        let request = new XMLHttpRequest();
+                        request.onreadystatechange = function() {
+                            if (request.readyState !== XMLHttpRequest.DONE)
+                                return ;
 
+                            if (request.status === 201) {
+                                console.log("Server erfolgreich hinzugefügt");
+                                nameField.clear();
+                                hostField.clear();
+                                portField.clear();
+                                checkTypeField.currentIndex = 0;
+                                pathField.text = "/";
+                                root.addFormVisible = false;
+                                root.loadStatuses();
+                            } else {
+                                console.log("Server konnte nicht hinzugefügt werden:", request.status, request.responseText);
+                            }
+                        };
+                        request.open("POST", "http://localhost:8085/servers");
+                        request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+                        let body = "name=" + encodeURIComponent(nameField.text.trim()) + "&host=" + encodeURIComponent(hostField.text.trim()) + "&port=" + encodeURIComponent(portField.text.trim()) + "&checkType=" + encodeURIComponent(checkTypeField.currentText);
+                        if (checkTypeField.currentText === "HTTP")
+                            body += "&path=" + encodeURIComponent(pathField.text.trim());
+
+                        request.send(body);
+                    }
+
+                    visible: root.addFormVisible
                     width: contentColumn.usableWidth
                     spacing: 8
 
@@ -165,34 +167,27 @@ PlasmoidItem {
 
                         width: parent.width
                         placeholderText: "Port"
-
                         inputMethodHints: Qt.ImhDigitsOnly
 
                         validator: IntValidator {
                             bottom: 1
                             top: 65535
                         }
+
                     }
 
                     PlasmaComponents.ComboBox {
                         id: checkTypeField
 
                         width: parent.width
-
-                        model: [
-                            "HTTP",
-                            "TCP"
-                        ]
+                        model: ["HTTP", "TCP"]
                     }
 
                     PlasmaComponents.TextField {
                         id: pathField
 
-                        visible:
-                            checkTypeField.currentText === "HTTP"
-
+                        visible: checkTypeField.currentText === "HTTP"
                         width: parent.width
-
                         placeholderText: "HTTP-Pfad"
                         text: "/"
                     }
@@ -200,20 +195,21 @@ PlasmoidItem {
                     PlasmaComponents.Button {
                         width: parent.width
                         text: "Hinzufügen"
-
+                        enabled: nameField.text.trim() !== "" && hostField.text.trim() !== "" && portField.acceptableInput
                         onClicked: {
-                            console.log(
-                                "Server:",
-                                nameField.text,
-                                hostField.text,
-                                portField.text,
-                                checkTypeField.currentText,
-                                pathField.text
-                            )
+                            onClicked:
+                            {
+                                addServerForm.submitServer();
+                            };
                         }
                     }
+
                 }
+
             }
+
         }
+
     }
+
 }

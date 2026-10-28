@@ -23,27 +23,30 @@ public class Main {
             e.printStackTrace();
             return;
         }
-        
+
         ServerHealthChecker tcpChecker = new ServerChecker();
         ServerHealthChecker httpChecker = new HttpServerChecker(Duration.ofSeconds(2));
-        
+
         ServerHealthCheckerFactory factory = new ServerHealthCheckerFactory(tcpChecker, httpChecker);
         ServerStatusFormatter formatter = new ServerStatusFormatter();
-        
+
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         ExecutorService checkExecutor = Executors.newFixedThreadPool(4);
         MonitoringService monitoringService = new MonitoringService(
-                                                    serverList,
-                                                    factory,
-                                                    formatter,
-                                                    scheduler,
-                                                    checkExecutor
-                                                );
-        StatusApiServer apiServer = new StatusApiServer(8085, monitoringService);
-        apiServer.start();                                                        
+                serverList,
+                factory,
+                formatter,
+                scheduler,
+                checkExecutor);
+
+        StatusApiServer apiServer = new StatusApiServer(
+                8085,
+                monitoringService,
+                serverLoader,
+                ConfigPaths.getServersConfigPath());
+        apiServer.start();
         Runtime.getRuntime().addShutdownHook(
-            new Thread(monitoringService::stopMonitoring)            
-        );
+                new Thread(monitoringService::stopMonitoring));
         monitoringService.startMonitoring(Duration.ofSeconds(30));
     }
 }

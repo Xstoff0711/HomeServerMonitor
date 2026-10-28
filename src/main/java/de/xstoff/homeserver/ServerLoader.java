@@ -3,6 +3,7 @@ package de.xstoff.homeserver;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,7 @@ public class ServerLoader {
 
         return serverList;
     }
-    
+
     private Server parseServer(String line) {
         String[] parts = line.split(";");
         if (parts.length != 4 && parts.length != 5) {
@@ -68,6 +69,35 @@ public class ServerLoader {
                     "Invalid server configuration: " + line);
         }
 
-        return new Server(parts[0], parts[1], port, checkType , path);
+        return new Server(parts[0], parts[1], port, checkType, path);
+    }
+
+    public void append(Path path, Server server) throws IOException {
+        Files.createDirectories(path.getParent());
+
+        String line;
+
+        if (server.checkType() == CheckType.HTTP) {
+            line = String.format(
+                    "%s;%s;%d;%s;%s%n",
+                    server.name(),
+                    server.ipAddress(),
+                    server.port(),
+                    server.checkType(),
+                    server.path());
+        } else {
+            line = String.format(
+                    "%s;%s;%d;%s%n",
+                    server.name(),
+                    server.ipAddress(),
+                    server.port(),
+                    server.checkType());
+        }
+
+        Files.writeString(
+                path,
+                line,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND);
     }
 }
