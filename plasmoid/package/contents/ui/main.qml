@@ -71,8 +71,6 @@ PlasmoidItem {
             height: contentColumn.implicitHeight
             radius: 6
             color: Kirigami.Theme.backgroundColor
-            border.color: Kirigami.Theme.separatorColor
-            border.width: 1
 
             Column {
                 id: contentColumn
@@ -91,38 +89,43 @@ PlasmoidItem {
 
                 Repeater {
                     model: root.serverStatuses
-
                     Row {
                         required property var modelData
-
                         width: contentColumn.usableWidth
                         spacing: 8
-
                         Rectangle {
                             width: 10
                             height: 10
                             radius: 5
-                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.verticalCenter: serverNameLabel.verticalCenter
                             color: modelData.online ? Kirigami.Theme.positiveTextColor : Kirigami.Theme.negativeTextColor
                         }
 
                         PlasmaComponents.Label {
+                            id: serverNameLabel
+
                             width: 170
                             text: modelData.name
                         }
 
                         PlasmaComponents.Label {
+                            id: serverStatusLabel
+
                             width: 70
                             text: modelData.online ? "ONLINE" : "OFFLINE"
                         }
 
                         PlasmaComponents.Label {
+                            id: serverResponseTimeLabel
+
                             width: 65
                             horizontalAlignment: Text.AlignRight
                             text: modelData.responseTimeMs !== null ? modelData.responseTimeMs + " ms" : "-"
                         }
 
                         PlasmaComponents.Button {
+                            id: deleteButton
+
                             text: "🗑"
                             onClicked: {
                                 root.deleteServer(modelData);
@@ -225,10 +228,7 @@ PlasmoidItem {
                         text: "Hinzufügen"
                         enabled: nameField.text.trim() !== "" && hostField.text.trim() !== "" && portField.acceptableInput
                         onClicked: {
-                            onClicked:
-                            {
-                                addServerForm.submitServer();
-                            };
+                            addServerForm.submitServer();
                         }
                     }
 
